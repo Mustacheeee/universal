@@ -43,7 +43,7 @@ def universal_perturbation(dataset, f, grads, delta=0.2, max_iter_uni = np.inf, 
 
     v = 0
     fooling_rate = 0.0
-    num_images =  np.shape(dataset)[0] # The images should be stacked ALONG FIRST DIMENSION
+    num_images =  np.shape(dataset)[0] # The images should be stacked ALONG FIRST DIMENSION 即为M
 
     itr = 0
     while fooling_rate < 1-delta and itr < max_iter_uni:
@@ -61,9 +61,9 @@ def universal_perturbation(dataset, f, grads, delta=0.2, max_iter_uni = np.inf, 
 
                 # Compute adversarial perturbation
                 dr,iter,_,_ = deepfool(cur_img + v, f, grads, num_classes=num_classes, overshoot=overshoot, max_iter=max_iter_df)
-
+                # dr 为一次向边界的扰动，iter为deepfool迭代的次数
                 # Make sure it converged...
-                if iter < max_iter_df-1:
+                if iter < max_iter_df-1: #限制deepfool的迭代次数max_iter_df
                     v = v + dr
 
                     # Project on l_p ball
@@ -80,9 +80,9 @@ def universal_perturbation(dataset, f, grads, delta=0.2, max_iter_uni = np.inf, 
         batch_size = 100
         num_batches = np.int(np.ceil(np.float(num_images) / np.float(batch_size)))
 
-        # Compute the estimated labels in batches
+        # Compute the estimated labels in batches 计算一个batch的labels
         for ii in range(0, num_batches):
-            m = (ii * batch_size)
+            m = (ii * batch_size) 
             M = min((ii+1)*batch_size, num_images)
             est_labels_orig[m:M] = np.argmax(f(dataset[m:M, :, :, :]), axis=1).flatten()
             est_labels_pert[m:M] = np.argmax(f(dataset_perturbed[m:M, :, :, :]), axis=1).flatten()
